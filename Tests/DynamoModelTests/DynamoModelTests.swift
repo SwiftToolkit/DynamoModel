@@ -8,6 +8,7 @@ struct User: DynamoModel, Codable, Sendable, Equatable {
     let email: String
     let points: Int
     let verified: Bool
+    let preferences: [String: String]
 
     var partitionKey: DynamoKey { "USER#\(id.uuidString)" }
     var sortKey: DynamoKey? { "PROFILE" }
@@ -21,7 +22,11 @@ let userJson = """
     "name": "John Doe",
     "email": "john.doe@example.com",
     "points": 100,
-    "verified": true
+    "verified": true,
+    "preferences": {
+        "theme": "dark",
+        "language": "en"
+    }
 }
 """
 
@@ -30,7 +35,11 @@ let user = User(
     name: "John Doe",
     email: "john.doe@example.com",
     points: 100,
-    verified: true
+    verified: true,
+    preferences: [
+        "theme": "dark",
+        "language": "en"
+    ]
 )
 
 @Test func testDecoding() async throws {
@@ -52,6 +61,8 @@ let user = User(
             #expect(intValue == stringToJSON?[key] as? Int)
         } else if let boolValue = value as? Bool {
             #expect(boolValue == stringToJSON?[key] as? Bool)
+        } else if let dictionaryValue = value as? [String: String] {
+            #expect(dictionaryValue == stringToJSON?[key] as? [String: String])
         } else {
             Issue.record("Unexpected value type: \(type(of: value))")
         }

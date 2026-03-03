@@ -103,6 +103,54 @@ let name = dynamoUser.name // instead of dynamoUser.base.name
 let email = dynamoUser.email // instead of dynamoUser.base.email
 ```
 
+## SotoDynamoDB CRUD Helpers (Package Trait)
+
+DynamoModel includes an opt-in **Package Trait** (`SotoDynamoDB`) that adds convenience CRUD methods as extensions on Soto's `DynamoDB` client. When enabled, Soto is resolved as a dependency and you get one-liner methods for common operations — no more boilerplate.
+
+### Enabling the Trait
+
+In your `Package.swift`, pass the trait when declaring the dependency:
+
+```swift
+.package(
+    url: "https://github.com/user/DynamoModel.git",
+    from: "1.0.0",
+    traits: ["SotoDynamoDB"]
+)
+```
+
+> **Note:** When the trait is not enabled, DynamoModel remains zero-dependency. Soto is never fetched or resolved.
+
+### Available Methods
+
+All methods are extensions on `DynamoDB` with the generic constraint `T: DynamoModel & Codable & Sendable`.
+
+```swift
+// Put
+try await dynamodb.put(user, tableName: "my-table")
+
+// Get
+let user = try await dynamodb.get(User.self, partitionKey: "USER#123", sortKey: "PROFILE", tableName: "my-table")
+
+// Delete by key
+try await dynamodb.delete(User.self, partitionKey: "USER#123", sortKey: "PROFILE", tableName: "my-table")
+
+// Delete by instance
+try await dynamodb.delete(user, tableName: "my-table")
+
+// Query (single page)
+let users = try await dynamodb.query(User.self, input: queryInput)
+
+// Query (all pages)
+let allUsers = try await dynamodb.queryAll(User.self, input: queryInput)
+
+// Batch put (auto-chunks into groups of 25)
+try await dynamodb.batchPut(users, tableName: "my-table")
+
+// Batch delete (auto-chunks into groups of 25)
+try await dynamodb.batchDelete(users, tableName: "my-table")
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

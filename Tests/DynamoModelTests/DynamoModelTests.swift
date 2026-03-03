@@ -1,6 +1,6 @@
+@testable import DynamoModel
 import Foundation
 import Testing
-@testable import DynamoModel
 
 struct User: DynamoModel, Codable, Sendable, Equatable {
     let id: UUID
@@ -42,14 +42,14 @@ let user = User(
     ]
 )
 
-@Test func testDecoding() async throws {
+@Test func decoding() async throws {
     let data = userJson.data(using: .utf8) ?? Data()
     let decodedUser = try JSONDecoder().decode(User.self, from: data)
     #expect(decodedUser == user)
     #expect((decodedUser.partitionKey as? String) == (user.partitionKey as? String))
 }
 
-@Test func testEncoding() async throws {
+@Test func encoding() async throws {
     let data = try JSONEncoder().encode(user)
     let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any]
     let stringToJSON = try JSONSerialization.jsonObject(with: userJson.data(using: .utf8)!) as? [String: Any]

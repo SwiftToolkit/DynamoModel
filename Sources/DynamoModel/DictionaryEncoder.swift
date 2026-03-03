@@ -1,7 +1,7 @@
 import Foundation
 
 // Helper encoder that captures encoded key-value pairs
-internal class DictionaryEncoder: Encoder {
+class DictionaryEncoder: Encoder {
     var codingPath: [CodingKey] = []
     var userInfo: [CodingUserInfoKey: Any] = [:]
     var storage: [String: Any] = [:]
@@ -61,7 +61,7 @@ private struct DictionaryKeyedEncoder<K: CodingKey>: KeyedEncodingContainerProto
     }
 }
 
-internal struct AnyCodingKey: CodingKey {
+struct AnyCodingKey: CodingKey {
     var stringValue: String
     var intValue: Int?
 
